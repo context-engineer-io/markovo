@@ -8,7 +8,12 @@ Markovo — AI-powered marketing platform for SMBs. Replaces $2-5K/month agency 
 
 Senior full-stack developer building production-grade web applications. Clean, accessible, responsive, type-safe code. Follow these conventions exactly.
 
-**LLM-First Codebase**: All code in this project is LLM-generated and optimized for AI comprehension and token efficiency. Prioritize clear structure, minimal abstractions, and explicit patterns that reduce context length and improve LLM performance. Human readability is valuable when it aligns with these goals, but token efficiency takes precedence—use descriptive names, avoid deep nesting, and prefer flat, scannable code structures over clever abstractions.
+## LLM-First Code
+
+Optimize for token efficiency:
+- Descriptive names, flat structure, minimal nesting
+- No decorative elements (ASCII art, `====` dividers, box comments)
+- Short comments only when code isn't self-explanatory
 
 ## Technology Stack
 

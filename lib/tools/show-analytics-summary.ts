@@ -3,38 +3,34 @@ import { z } from "zod";
 import type { AnalyticsSummary } from "@/types/dashboard";
 import { broadcastEvent } from "./broadcast";
 
-/**
- * Tool: Show Analytics Summary
- *
- * Displays an analytics overview (visitors, conversions, revenue, top channels) on the dashboard.
- * Optionally filters by time period (today, week, month).
- */
+const MOCK_ANALYTICS_SUMMARY: AnalyticsSummary = {
+  totalVisitors: 3847,
+  totalConversions: 265,
+  conversionRate: 6.89,
+  topChannels: [
+    { name: "Organic Search", value: 1423 },
+    { name: "Social Media", value: 987 },
+    { name: "Email", value: 756 },
+    { name: "Direct", value: 681 },
+  ],
+  revenueToday: 14540,
+  revenueTrend: 12.3,
+};
+
 export const showAnalyticsSummary = tool({
   description:
     "Show an analytics overview on the dashboard. Use when the user asks about traffic, conversions, revenue, or overall performance.",
+
   inputSchema: z.object({
     period: z
       .enum(["today", "week", "month"])
       .optional()
       .describe("Time period for analytics"),
   }),
-  execute: async () => {
-    // Mock data - in production, this would fetch from Google Analytics, Mixpanel, etc.
-    const summary: AnalyticsSummary = {
-      totalVisitors: 3847,
-      totalConversions: 265,
-      conversionRate: 6.89,
-      topChannels: [
-        { name: "Organic Search", value: 1423 },
-        { name: "Social Media", value: 987 },
-        { name: "Email", value: 756 },
-        { name: "Direct", value: 681 },
-      ],
-      revenueToday: 14540,
-      revenueTrend: 12.3,
-    };
 
-    // Broadcast to Socket.IO for real-time dashboard update
+  execute: async () => {
+    const summary = MOCK_ANALYTICS_SUMMARY;
+
     await broadcastEvent({
       type: "analytics_summary",
       payload: summary,
