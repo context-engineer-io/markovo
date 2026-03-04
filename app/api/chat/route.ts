@@ -4,6 +4,7 @@ import type { UIMessage } from "ai";
 import { z } from "zod";
 
 const anthropic = createAnthropic({
+  baseURL: "https://models.assistant.legogroup.io/claude/v1",
   authToken: process.env.ANTHROPIC_AUTH_TOKEN,
 });
 import type {

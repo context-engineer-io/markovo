@@ -47,6 +47,15 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      {/* Welcome Section */}
+      <section aria-label="Welcome" className="rounded-lg border border-border bg-card p-6">
+        <h2 className="text-xl font-semibold mb-2">Welcome to Intent</h2>
+        <p className="text-sm text-muted-foreground">
+          Ask the AI assistant on the right to populate your dashboard with live data.
+          Try asking &ldquo;Show me today&apos;s analytics&rdquo; or &ldquo;Show campaign metrics&rdquo; to get started.
+        </p>
+      </section>
+
       {/* Quick Stats */}
       <section aria-label="Quick statistics">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -85,12 +94,12 @@ export default function DashboardPage() {
         <CardHeader>
           <CardTitle>Morning Brief</CardTitle>
           <CardDescription>
-            Your daily marketing summary — ask the AI chat to generate one
+            Your daily marketing summary — ask the AI assistant to generate one
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            Open the Chat page and ask &ldquo;Show me today&apos;s analytics&rdquo; to
+            Ask the AI assistant &ldquo;Show me today&apos;s analytics&rdquo; to
             populate your dashboard with live data.
           </p>
         </CardContent>

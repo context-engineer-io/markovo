@@ -7,8 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Bot, User } from "lucide-react";
+import { Send, Bot, User, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+interface ChatPanelProps {
+  connectionStatus: "connected" | "disconnected" | "connecting";
+  onClose?: () => void;
+  isMobile?: boolean;
+}
 
 function getMessageText(message: UIMessage): string {
   return message.parts
@@ -17,7 +23,7 @@ function getMessageText(message: UIMessage): string {
     .join("");
 }
 
-export default function ChatPage() {
+export function ChatPanel({ connectionStatus, onClose, isMobile = false }: ChatPanelProps) {
   const { messages, sendMessage, status } = useChat();
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -50,21 +56,59 @@ export default function ChatPage() {
   );
 
   return (
-    <div className="flex h-[calc(100vh-7rem)] flex-col">
-      <ScrollArea className="flex-1 pr-4" ref={scrollRef}>
-        <div className="space-y-4 pb-4">
+    <div className="flex h-full flex-col bg-muted/30">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-border bg-background px-4 py-3">
+        <div className="flex items-center gap-2">
+          <Bot className="size-5 text-muted-foreground" aria-hidden="true" />
+          <h2 className="text-sm font-semibold">AI Assistant</h2>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
+            <div
+              className={cn(
+                "size-2 rounded-full",
+                connectionStatus === "connected" && "bg-emerald-500",
+                connectionStatus === "connecting" && "bg-amber-500 animate-pulse",
+                connectionStatus === "disconnected" && "bg-destructive"
+              )}
+              aria-hidden="true"
+            />
+            <span className="text-xs text-muted-foreground">
+              {connectionStatus === "connected" && "Connected"}
+              {connectionStatus === "connecting" && "Connecting..."}
+              {connectionStatus === "disconnected" && "Disconnected"}
+            </span>
+          </div>
+          {isMobile && onClose && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              aria-label="Close chat"
+              className="size-7"
+            >
+              <X className="size-4" />
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Messages */}
+      <ScrollArea className="flex-1 px-4" ref={scrollRef}>
+        <div className="space-y-4 py-4">
           {messages.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="flex flex-col items-center justify-center py-8 text-center">
               <Bot
                 className="size-12 text-muted-foreground/40 mb-4"
                 aria-hidden="true"
               />
-              <h2 className="text-lg font-semibold">Intent AI Assistant</h2>
-              <p className="mt-1 max-w-md text-sm text-muted-foreground">
+              <h3 className="text-sm font-semibold">Intent AI Assistant</h3>
+              <p className="mt-1 max-w-xs text-xs text-muted-foreground">
                 Ask me to show your content updates, campaign metrics, or
                 analytics summary. I can update your dashboard in real-time.
               </p>
-              <div className="mt-6 flex flex-wrap justify-center gap-2">
+              <div className="mt-6 flex flex-col gap-2 w-full max-w-xs">
                 {[
                   "Show me today's analytics",
                   "Show content updates",
@@ -75,6 +119,7 @@ export default function ChatPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => handleSuggestion(suggestion)}
+                    className="w-full text-xs"
                   >
                     {suggestion}
                   </Button>
@@ -91,7 +136,7 @@ export default function ChatPage() {
               <Card
                 key={message.id}
                 className={cn(
-                  "max-w-[85%]",
+                  "max-w-[90%]",
                   message.role === "user" ? "ml-auto" : "mr-auto"
                 )}
               >
@@ -114,7 +159,7 @@ export default function ChatPage() {
                     <p className="text-xs font-medium text-muted-foreground mb-1">
                       {message.role === "user" ? "You" : "Intent"}
                     </p>
-                    <div className="text-sm whitespace-pre-wrap">{text}</div>
+                    <div className="text-sm whitespace-pre-wrap break-words">{text}</div>
                   </div>
                 </CardContent>
               </Card>
@@ -122,7 +167,7 @@ export default function ChatPage() {
           })}
 
           {isLoading && messages[messages.length - 1]?.role === "user" && (
-            <Card className="mr-auto max-w-[85%]">
+            <Card className="mr-auto max-w-[90%]">
               <CardContent className="flex items-center gap-3 p-3">
                 <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted">
                   <Bot className="size-4" aria-hidden="true" />
@@ -138,9 +183,10 @@ export default function ChatPage() {
         </div>
       </ScrollArea>
 
+      {/* Input */}
       <form
         onSubmit={handleSubmit}
-        className="flex items-center gap-2 border-t border-border pt-4"
+        className="flex items-center gap-2 border-t border-border bg-background p-4"
       >
         <label htmlFor="chat-input" className="sr-only">
           Message
