@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Header } from "@/components/dashboard/header";
 import { ChatPanel } from "@/components/dashboard/chat-panel";
-import { useSocket } from "@/hooks/use-socket";
+import { useRealtime } from "@/hooks/use-realtime";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { SocketProvider } from "@/components/dashboard/socket-provider";
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,7 @@ export default function DashboardLayout({
   const [chatOpen, setChatOpen] = useState(false);
   const [focusModeEnabled, setFocusModeEnabled] = useState(false);
   const pathname = usePathname();
-  const { status, lastEvent } = useSocket();
+  const { status, lastEvent } = useRealtime();
 
   const title =
     pageTitles[pathname] ??
