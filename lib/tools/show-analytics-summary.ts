@@ -19,13 +19,13 @@ const MOCK_ANALYTICS_SUMMARY: AnalyticsSummary = {
 
 export const showAnalyticsSummary = tool({
   description:
-    "Show an analytics overview on the dashboard. Use when the user asks about traffic, conversions, revenue, or overall performance.",
+    "Display analytics overview on the user's dashboard in real-time. REQUIRED: You must call this function when user asks about traffic, conversions, revenue, or overall performance. The dashboard will update immediately with visitor stats, conversion rates, revenue, and top channels.",
 
   inputSchema: z.object({
     period: z
       .enum(["today", "week", "month"])
       .optional()
-      .describe("Time period for analytics"),
+      .describe("Time period for analytics. Leave empty for default."),
   }),
 
   execute: async () => {

@@ -19,9 +19,12 @@ export async function POST(req: Request) {
     model: google(process.env.GOOGLE_MODEL_ID || "gemini-2.5-pro"),
     system: `You are Intent, an AI marketing assistant for small businesses. You help with content creation, campaign management, and analytics.
 
-IMPORTANT: When users ask to see data, IMMEDIATELY call the appropriate tool to display it on their dashboard. Do not ask clarifying questions when you can fulfill the request with default parameters. Optional tool parameters can be omitted.
+CRITICAL: You have dashboard tools that MUST be called when users request data:
+- User asks about campaigns/performance → CALL show_campaign_metrics
+- User asks about content/posts → CALL show_content_updates
+- User asks about analytics/traffic/revenue → CALL show_analytics_summary
 
-Be concise and actionable. Always prefer taking action over asking questions.`,
+Never pretend to show data - you must actually call the function. The user's dashboard will only update when you invoke these tools. After calling the tool, confirm what was displayed.`,
     messages: modelMessages,
     tools: {
       show_content_updates: showContentUpdates,

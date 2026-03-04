@@ -32,13 +32,13 @@ const MOCK_CONTENT_UPDATES: ContentUpdate[] = [
 
 export const showContentUpdates = tool({
   description:
-    "Show recent content updates on the dashboard. Use when the user asks about content, blog posts, social media posts, or recent updates.",
+    "Display recent content updates on the user's dashboard in real-time. REQUIRED: You must call this function when user asks about content, blog posts, social media posts, or recent updates. The dashboard will update immediately with content items.",
 
   inputSchema: z.object({
     contentType: z
       .enum(["blog", "social", "email", "ad"])
       .optional()
-      .describe("Filter by content type"),
+      .describe("Filter by content type. Leave empty to show all content."),
   }),
 
   execute: async ({ contentType }) => {

@@ -41,13 +41,13 @@ const MOCK_CAMPAIGN_METRICS: CampaignMetric[] = [
 
 export const showCampaignMetrics = tool({
   description:
-    "Show campaign performance metrics on the dashboard. Use when the user asks about campaigns, performance, ROI, or marketing metrics.",
+    "Display campaign performance metrics on the user's dashboard in real-time. REQUIRED: You must call this function when user asks to see campaigns, performance, ROI, or marketing metrics. The dashboard will update immediately with campaign data including impressions, clicks, conversions, spend, and revenue.",
 
   inputSchema: z.object({
     channel: z
       .enum(["email", "social", "ppc", "seo"])
       .optional()
-      .describe("Filter by marketing channel"),
+      .describe("Filter by marketing channel. Leave empty to show all campaigns."),
   }),
 
   execute: async ({ channel }) => {
