@@ -58,40 +58,22 @@ export function ChatPanel({ connectionStatus, onClose, isMobile = false }: ChatP
   return (
     <div className="flex h-full flex-col bg-muted/30">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-border bg-background px-4 py-3">
+      <div className="flex h-14 items-center justify-between border-b border-border bg-background px-4">
         <div className="flex items-center gap-2">
           <Bot className="size-5 text-muted-foreground" aria-hidden="true" />
           <h2 className="text-sm font-semibold">AI Assistant</h2>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2">
-            <div
-              className={cn(
-                "size-2 rounded-full",
-                connectionStatus === "connected" && "bg-emerald-500",
-                connectionStatus === "connecting" && "bg-amber-500 animate-pulse",
-                connectionStatus === "disconnected" && "bg-destructive"
-              )}
-              aria-hidden="true"
-            />
-            <span className="text-xs text-muted-foreground">
-              {connectionStatus === "connected" && "Connected"}
-              {connectionStatus === "connecting" && "Connecting..."}
-              {connectionStatus === "disconnected" && "Disconnected"}
-            </span>
-          </div>
-          {isMobile && onClose && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              aria-label="Close chat"
-              className="size-7"
-            >
-              <X className="size-4" />
-            </Button>
-          )}
-        </div>
+        {isMobile && onClose && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            aria-label="Close chat"
+            className="size-7"
+          >
+            <X className="size-4" />
+          </Button>
+        )}
       </div>
 
       {/* Messages */}
