@@ -8,17 +8,24 @@ export async function GET() {
 
   const stream = new ReadableStream({
     start(controller) {
-      const interval = setInterval(() => {
-        const events = SSEBroadcaster.getEvents();
+      let lastEventIndex = 0;
 
-        if (events.length > 0) {
-          for (const event of events) {
-            const data = `data: ${JSON.stringify(event)}\n\n`;
-            controller.enqueue(encoder.encode(data));
+      const interval = setInterval(() => {
+        try {
+          const events = SSEBroadcaster.getEvents();
+
+          if (events.length > lastEventIndex) {
+            for (let i = lastEventIndex; i < events.length; i++) {
+              const event = events[i];
+              const data = `data: ${JSON.stringify(event)}\n\n`;
+              controller.enqueue(encoder.encode(data));
+            }
+            lastEventIndex = events.length;
+          } else {
+            controller.enqueue(encoder.encode(": heartbeat\n\n"));
           }
-          SSEBroadcaster.clearEvents();
-        } else {
-          controller.enqueue(encoder.encode(": heartbeat\n\n"));
+        } catch (error) {
+          console.error("SSE stream error:", error);
         }
       }, 1000);
 
@@ -31,8 +38,9 @@ export async function GET() {
   return new Response(stream, {
     headers: {
       "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
+      "Cache-Control": "no-cache, no-transform",
       "Connection": "keep-alive",
+      "X-Accel-Buffering": "no",
     },
   });
 }

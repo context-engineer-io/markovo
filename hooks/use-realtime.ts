@@ -17,85 +17,77 @@ export function useRealtime() {
 
   useEffect(() => {
     if (BROADCAST_MODE === "sse") {
-      return useSSE(setStatus, setLastEvent);
+      setStatus("connecting");
+
+      const eventSource = new EventSource("/api/events/stream");
+
+      eventSource.onopen = () => {
+        setStatus("connected");
+      };
+
+      eventSource.onerror = () => {
+        setStatus("disconnected");
+      };
+
+      eventSource.onmessage = (event) => {
+        if (event.data && !event.data.startsWith(":")) {
+          try {
+            const dashboardEvent = JSON.parse(
+              event.data
+            ) as DashboardUpdatedEvent;
+            setLastEvent(dashboardEvent);
+          } catch (error) {
+            console.error("Failed to parse SSE event:", error);
+          }
+        }
+      };
+
+      return () => {
+        eventSource.close();
+      };
     } else {
-      return useSocketIO(setStatus, setLastEvent);
+      setStatus("connecting");
+
+      const SOCKET_URL =
+        process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
+
+      let cleanup: (() => void) | null = null;
+
+      import("socket.io-client").then(({ io }) => {
+        const socket = io(SOCKET_URL, {
+          transports: ["websocket", "polling"],
+          reconnection: true,
+          reconnectionAttempts: Infinity,
+          reconnectionDelay: 1000,
+          reconnectionDelayMax: 5000,
+        });
+
+        socket.on("connect", () => {
+          setStatus("connected");
+        });
+
+        socket.on("disconnect", () => {
+          setStatus("disconnected");
+        });
+
+        socket.on("connect_error", () => {
+          setStatus("disconnected");
+        });
+
+        socket.on("DashboardUpdated", (event: DashboardUpdatedEvent) => {
+          setLastEvent(event);
+        });
+
+        cleanup = () => {
+          socket.disconnect();
+        };
+      });
+
+      return () => {
+        cleanup?.();
+      };
     }
   }, []);
 
   return { status, lastEvent };
-}
-
-function useSSE(
-  setStatus: (status: ConnectionStatus) => void,
-  setLastEvent: (event: DashboardUpdatedEvent) => void
-) {
-  setStatus("connecting");
-
-  const eventSource = new EventSource("/api/events/stream");
-
-  eventSource.onopen = () => {
-    setStatus("connected");
-  };
-
-  eventSource.onerror = () => {
-    setStatus("disconnected");
-  };
-
-  eventSource.onmessage = (event) => {
-    if (event.data && event.data !== ": heartbeat") {
-      try {
-        const dashboardEvent = JSON.parse(event.data) as DashboardUpdatedEvent;
-        setLastEvent(dashboardEvent);
-      } catch (error) {
-        console.error("Failed to parse SSE event:", error);
-      }
-    }
-  };
-
-  return () => {
-    eventSource.close();
-  };
-}
-
-function useSocketIO(
-  setStatus: (status: ConnectionStatus) => void,
-  setLastEvent: (event: DashboardUpdatedEvent) => void
-) {
-  setStatus("connecting");
-
-  const SOCKET_URL =
-    process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-
-  import("socket.io-client").then(({ io }) => {
-    const socket = io(SOCKET_URL, {
-      transports: ["websocket", "polling"],
-      reconnection: true,
-      reconnectionAttempts: Infinity,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-    });
-
-    socket.on("connect", () => {
-      setStatus("connected");
-    });
-
-    socket.on("disconnect", () => {
-      setStatus("disconnected");
-    });
-
-    socket.on("connect_error", () => {
-      setStatus("disconnected");
-    });
-
-    socket.on("DashboardUpdated", (event: DashboardUpdatedEvent) => {
-      setLastEvent(event);
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  });
-
-  return () => {};
 }
