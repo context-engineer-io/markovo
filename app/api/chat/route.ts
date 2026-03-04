@@ -1,4 +1,4 @@
-import { createAnthropic } from "@ai-sdk/anthropic";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { streamText, stepCountIs, convertToModelMessages } from "ai";
 import type { UIMessage } from "ai";
 import {
@@ -7,9 +7,8 @@ import {
   showAnalyticsSummary,
 } from "@/lib/tools";
 
-const anthropic = createAnthropic({
-  baseURL: "https://models.assistant.legogroup.io/claude/v1",
-  authToken: process.env.ANTHROPIC_AUTH_TOKEN,
+const google = createGoogleGenerativeAI({
+  apiKey: process.env.GOOGLE_API_KEY,
 });
 
 export async function POST(req: Request) {
@@ -17,9 +16,7 @@ export async function POST(req: Request) {
   const modelMessages = await convertToModelMessages(messages);
 
   const result = streamText({
-    model: anthropic(
-      process.env.ANTHROPIC_MODEL_ID || "anthropic.claude-sonnet-4-5-20250929-v1:0"
-    ),
+    model: google(process.env.GOOGLE_MODEL_ID || "gemini-2.5-pro-latest"),
     system: `You are Intent, an AI marketing assistant for small businesses. You help with content creation, campaign management, and analytics. When users ask to see data, use the appropriate tool to display it on their dashboard. Be concise and actionable.`,
     messages: modelMessages,
     tools: {
