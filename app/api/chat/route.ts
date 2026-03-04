@@ -16,8 +16,12 @@ export async function POST(req: Request) {
   const modelMessages = await convertToModelMessages(messages);
 
   const result = streamText({
-    model: google(process.env.GOOGLE_MODEL_ID || "gemini-2.5-pro-latest"),
-    system: `You are Intent, an AI marketing assistant for small businesses. You help with content creation, campaign management, and analytics. When users ask to see data, use the appropriate tool to display it on their dashboard. Be concise and actionable.`,
+    model: google(process.env.GOOGLE_MODEL_ID || "gemini-2.5-pro"),
+    system: `You are Intent, an AI marketing assistant for small businesses. You help with content creation, campaign management, and analytics.
+
+IMPORTANT: When users ask to see data, IMMEDIATELY call the appropriate tool to display it on their dashboard. Do not ask clarifying questions when you can fulfill the request with default parameters. Optional tool parameters can be omitted.
+
+Be concise and actionable. Always prefer taking action over asking questions.`,
     messages: modelMessages,
     tools: {
       show_content_updates: showContentUpdates,
