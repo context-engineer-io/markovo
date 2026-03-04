@@ -14,7 +14,7 @@ Transform how small businesses approach marketing by automating 80% of agency wo
 
 ## Documentation
 
-- [Complete Product Plan](./PRODUCT_PLAN.md) - Comprehensive breakdown of strategy, features, architecture, and roadmap
+- [Complete Product Plan](./docs/PRODUCT_PLAN.md) - Comprehensive breakdown of strategy, features, architecture, and roadmap
 
 ## Current Status
 
